@@ -66,23 +66,23 @@ def get_wx_meteo(lat=0, lon=0, unit=0):
 	# convert wind value to cardinal directions
 	for value in daily_wind_direction_10m_dominant:
 		if value < 22.5:
-			wind_direction = "С"
+			wind_direction = "северный"
 		elif value < 67.5:
-			wind_direction = "СВ"
+			wind_direction = "северо-восточный"
 		elif value < 112.5:
-			wind_direction = "В"
+			wind_direction = "восточный"
 		elif value < 157.5:
-			wind_direction = "ЮВ"
+			wind_direction = "юго-восточный"
 		elif value < 202.5:
-			wind_direction = "Ю"
+			wind_direction = "южный"
 		elif value < 247.5:
-			wind_direction = "ЮЗ"
+			wind_direction = "юго-западный"
 		elif value < 292.5:
-			wind_direction = "З"
+			wind_direction = "западный"
 		elif value < 337.5:
-			wind_direction = "СЗ"
+			wind_direction = "северо-западный"
 		else:
-			wind_direction = "С"
+			wind_direction = "северный"
 
 	# create a weather report
 	weather_report = ""
@@ -92,7 +92,7 @@ def get_wx_meteo(lat=0, lon=0, unit=0):
 		elif str(i + 1) == "2":
 			weather_report += "Завтра: "
 		else:
-			weather_report += "Прогноз: "
+			weather_report += "Послезавтра: "
 
 		# report weather from WMO Weather interpretation codes (WW)
 		code_string = ""
@@ -163,29 +163,29 @@ def get_wx_meteo(lat=0, lon=0, unit=0):
 		elif daily_weather_code[i] == 99:
 			code_string = "Сильный град"
 
-		weather_report += code_string + ". "
+		weather_report += code_string + ", "
 
 		# report temperature
 		if unit == 0:
-			weather_report += "Макс: " + str(int(round(daily_temperature_2m_max[i]))) + "F, мин " + str(int(round(daily_temperature_2m_min[i]))) + "F. "
+			weather_report += "макс. " + str(int(round(daily_temperature_2m_max[i]))) + "°F, мин. " + str(int(round(daily_temperature_2m_min[i]))) + "°F. "
 		else:
-			weather_report += "Макс: " + str(int(round(daily_temperature_2m_max[i]))) + "C, мин " + str(int(round(daily_temperature_2m_min[i]))) + "C. "
+			weather_report += "макс. " + str(int(round(daily_temperature_2m_max[i]))) + "°C, мин. " + str(int(round(daily_temperature_2m_min[i]))) + "°C. "
 
 		# check for precipitation
 		if daily_precipitation_hours[i] > 0:
 			if unit == 0:
-				weather_report += "Осадки: " + str(round(daily_precipitation_probability_max[i],2)) + " дм, через " + str(round(daily_precipitation_hours[i],2)) + " ч. "
+				weather_report += "Осадки: " + str(round(daily_precipitation_probability_max[i],2)) + " дюйм, продолж. " + str(round(daily_precipitation_hours[i],2)) + " ч. "
 			else:
-				weather_report += "Осадки: " + str(round(daily_precipitation_probability_max[i],2)) + " мм, через " + str(round(daily_precipitation_hours[i],2)) + " ч. "
+				weather_report += "Осадки: " + str(round(daily_precipitation_probability_max[i],2)) + " мм, продолж. " + str(round(daily_precipitation_hours[i],2)) + " ч. "
 		else:
 			weather_report += "Без осадков. "
 
 		# check for wind
 		if daily_wind_speed_10m_max[i] > 0:
 			if unit == 0:
-				weather_report += "Ветер: " + str(int(round(daily_wind_speed_10m_max[i]))) + "миль/ч, порывы " + str(int(round(daily_wind_gusts_10m_max[i]))) + " миль/ч, направление: " + wind_direction + "."
+				weather_report += "Ветер: " + str(int(round(daily_wind_speed_10m_max[i]))) + " миль/ч, порывы " + str(int(round(daily_wind_gusts_10m_max[i]))) + " миль/ч, " + wind_direction + "."
 			else:
-				weather_report += "Ветер: " + str(int(round(daily_wind_speed_10m_max[i]))) + "км/ч, порывы " + str(int(round(daily_wind_gusts_10m_max[i]))) + "км/ч направление: " + wind_direction + "."
+				weather_report += "Ветер: " + str(int(round(daily_wind_speed_10m_max[i]))) + " км/ч, порывы " + str(int(round(daily_wind_gusts_10m_max[i]))) + " км/ч, " + wind_direction + "."
 		else:
 			weather_report += "Штиль\n"
 
