@@ -166,10 +166,10 @@ def auto_response(message, snr, rssi, hop, pkiStatus, message_from_id, channel_n
     if len(cmds) > 0:
         # sort the commands by index value
         cmds = sorted(cmds, key=lambda k: k['index'])
-    
+
         # Check if user is already playing a game
         playing, game = isPlayingGame(message_from_id)[0], isPlayingGame(message_from_id)[1]
-    
+
         # Block restricted commands if not DM
         if (cmds[0]['cmd'] in restrictedCommands and not isDM) or (cmds[0]['cmd'] in restrictedCommands and playing) or playing:
             logger.debug(f"System: Bot restricted Command:{cmds[0]['cmd']} From: {get_name_from_number(message_from_id)} isDM:{isDM} playing:{playing}")
@@ -237,7 +237,7 @@ def check_and_play_game(tracker, message_from_id, message_string, rxNode, channe
     for i in range(len(tracker)):
         # Use 'userID' for DopeWars, 'nodeID' for others (including Survey)
         id_key = 'userID' if game_name == "DopeWars" else 'nodeID'
-        
+
         if tracker[i].get(id_key) == message_from_id:
             last_played_key = 'last_played' if 'last_played' in tracker[i] else 'time'
             if tracker[i].get(last_played_key) > (time.time() - my_settings.GAMEDELAY):
@@ -246,7 +246,7 @@ def check_and_play_game(tracker, message_from_id, message_string, rxNode, channe
                 send_message(handle_game_func(message_string, message_from_id, rxNode), channel_number, message_from_id, rxNode)
                 return True, game_name
     return False, "None"
-    
+
 def handle_ping(message_from_id, deviceID,  message, hop, snr, rssi, isDM, channel_number):
     global multiPing
     myNodeNum = globals().get(f'myNodeNum{deviceID}', 777)
@@ -256,7 +256,7 @@ def handle_ping(message_from_id, deviceID,  message, hop, snr, rssi, isDM, chann
         "🏓 Send 'ping <number>' to get multiple pings in DM"
         "🏓 ping @USERID to send a Joke from the bot"
         return pingHelp
-    
+
     msg = ""
     type = ''
 
@@ -286,7 +286,7 @@ def handle_ping(message_from_id, deviceID,  message, hop, snr, rssi, isDM, chann
     else:
         #flood
         msg += " [F]"
-    
+
     if (float(snr) != 0 or float(rssi) != 0) and "Hop" not in hop:
         msg += f"\nSNR:{snr} RSSI:{rssi}"
     elif "Hop" in hop:
@@ -345,7 +345,7 @@ def handle_ping(message_from_id, deviceID,  message, hop, snr, rssi, isDM, chann
                     return "🚫⛔️auto-ping request denied."
             except ValueError:
                 pingCount = -1
-    
+
         if pingCount > 1:
             multiPingList.append({'message_from_id': message_from_id, 'count': pingCount + 1, 'type': type, 'deviceID': deviceID, 'channel_number': channel_number, 'startCount': pingCount})
             logger.info(f"System: Starting auto-ping of type {type} for {pingCount} pings to {get_name_from_number(message_from_id, 'short', deviceID)}")
@@ -357,7 +357,7 @@ def handle_ping(message_from_id, deviceID,  message, hop, snr, rssi, isDM, chann
     # if not a DM add the username to the beginning of msg
     if not my_settings.useDMForResponse and not isDM:
         msg = "@" + get_name_from_number(message_from_id, 'short', deviceID) + " " + msg
-            
+
     return msg
 
 def handle_alertBell(message_from_id, deviceID, message):
@@ -480,7 +480,7 @@ def handle_wxalert(message_from_id, deviceID, message):
             weatherAlert = getActiveWeatherAlertsDetailNOAA(str(location[0]), str(location[1]))
         else:
             weatherAlert = getWeatherAlertsNOAA(str(location[0]), str(location[1]))
-        
+
         if my_settings.NO_ALERTS not in weatherAlert:
             weatherAlert = weatherAlert[0]
         return weatherAlert
@@ -515,7 +515,7 @@ def handleNews(message_from_id, deviceID, message, isDM):
         return news
     else:
         return "No news for you!"
-    
+
 def handle_howfar(message, message_from_id, deviceID, isDM):
     msg = ''
     location = get_node_location(message_from_id, deviceID)
@@ -524,17 +524,17 @@ def handle_howfar(message, message_from_id, deviceID, isDM):
     # if ? in message
     if "?" in message.lower():
         return "command returns the distance you have traveled since your last HowFar-command. Add 'reset' to reset your starting point."
-    
+
     # if no GPS location return
     if lat == my_settings.latitudeValue and lon == my_settings.longitudeValue:
         logger.debug(f"System: HowFar: No GPS location for {message_from_id}")
         return "No GPS location available"
-    
+
     if "reset" in message.lower():
         msg = distance(lat,lon,message_from_id, reset=True)
     else:
         msg = distance(lat,lon,message_from_id)
-    
+
     # if not a DM add the username to the beginning of msg
     if not my_settings.useDMForResponse and not isDM:
         msg = "@" + get_name_from_number(message_from_id, 'short', deviceID) + " " + msg
@@ -550,7 +550,7 @@ def handle_howtall(message, message_from_id, deviceID, isDM):
         # add guessing tot he msg
         msg += "Guessing:"
     if my_settings.use_metric:
-            measure = "meters" 
+            measure = "meters"
     else:
             measure = "feet"
     # if ? in message
@@ -568,7 +568,7 @@ def handle_howtall(message, message_from_id, deviceID, isDM):
     # if data has NO_ALERTS return help
     if my_settings.NO_ALERTS in msg:
         return f"Please provide a shadow length in {measure} example: howtall 5.5"
-    
+
     return msg
 
 def handle_wiki(message, isDM):
@@ -583,7 +583,7 @@ def handle_wiki(message, isDM):
         search = parts[1].strip()
         if search:
             return get_wikipedia_summary(search)
-        
+
     return msg
 
 # Runtime Variables for LLM
@@ -628,12 +628,12 @@ def handle_satpass(message_from_id, deviceID, message='', vox=False):
     if passes == '':
         passes = "No 🛰️ anytime soon"
     return passes
-        
+
 def handle_llm(message_from_id, channel_number, deviceID, message, publicChannel):
     global llmRunCounter, llmLocationTable, llmTotalRuntime, cmdHistory, seenNodes
     location_name = 'no location provided'
     msg = ''
-    
+
     if my_settings.location_enabled:
         # if message_from_id is is the llmLocationTable use the location from the list to save on API calls
         for i in range(0, len(llmLocationTable)):
@@ -670,7 +670,7 @@ def handle_llm(message_from_id, channel_number, deviceID, message, publicChannel
             for node in seenNodes:
                 if node['nodeID'] == message_from_id:
                     node['welcome'] = True
-    
+
     # update the llmLocationTable for future use
     for i in range(0, len(llmLocationTable)):
         if llmLocationTable[i].get('nodeID') == message_from_id:
@@ -681,7 +681,7 @@ def handle_llm(message_from_id, channel_number, deviceID, message, publicChannel
         llmLocationTable.append({'nodeID': message_from_id, 'location': location_name})
 
     user_input = user_input.strip()
-        
+
     if len(user_input) < 1:
         return "Please ask a question"
 
@@ -699,7 +699,7 @@ def handle_llm(message_from_id, channel_number, deviceID, message, publicChannel
         else:
             # send via channel
             send_message(msg, channel_number, 0, deviceID)
-    
+
     start = time.time()
 
     #response = asyncio.run(llm_query(user_input, message_from_id))
@@ -709,7 +709,7 @@ def handle_llm(message_from_id, channel_number, deviceID, message, publicChannel
     end = time.time()
     llmRunCounter += 1
     llmTotalRuntime.append(end - start)
-    
+
     return response
 
 def handleDopeWars(message, nodeID, rxNode):
@@ -798,7 +798,7 @@ def handleLemonade(message, nodeID, deviceID):
         lemonadeLemons[:] = [p for p in lemonadeLemons if p['nodeID'] != nodeID]
         lemonadeSugar[:] = [p for p in lemonadeSugar if p['nodeID'] != nodeID]
         lemonadeWeeks[:] = [p for p in lemonadeWeeks if p['nodeID'] != nodeID]
-        lemonadeScore[:] = [p for p in lemonadeScore if p['nodeID'] != nodeID] 
+        lemonadeScore[:] = [p for p in lemonadeScore if p['nodeID'] != nodeID]
         return msg
 
     # play lemonstand (not newgame)
@@ -996,7 +996,7 @@ def handleGolf(message, nodeID, deviceID):
 
         msg = "Welcome to 🏌️GolfSim⛳️\n"
         msg += "Clubs: (D)river, (L)ow Iron, (M)id Iron, (H)igh Iron, (G)ap Wedge, Lob (W)edge (C)addie\n"
-    
+
     msg += playGolf(nodeID=nodeID, message=message, last_cmd=last_cmd)
     return msg
 
@@ -1254,7 +1254,7 @@ def quizHandler(message, nodeID, deviceID):
                 if len(part) == 10:
                     player_name = get_name_from_number(int(part), 'short', deviceID)
                     msg = msg.replace(part, player_name)
-        
+
         # broadcast message to all players if user is in bbs_admin_list and msg is a dict with 'message' key
         if isinstance(msg, dict) and str(nodeID) in bbs_admin_list and 'message' in msg:
             for player_id in quizGamePlayer.players:
@@ -1277,7 +1277,7 @@ def surveyHandler(message, nodeID, deviceID):
         surveySays = surveySays.removeprefix("survey").strip()
     elif msg_lower.startswith("s:"):
         surveySays = surveySays.removeprefix("s:").strip()
-    
+
     # Handle end command
     if surveySays == "end":
         if nodeID not in survey_module.responses:
@@ -1349,10 +1349,10 @@ def handle_wxc(message_from_id, deviceID, cmd, days=None, vox=False):
     location = get_node_location(message_from_id, deviceID)
     if my_settings.use_meteo_wxApi and not "wxc" in cmd and not use_metric:
         #logger.debug("System: Bot Returning Open-Meteo API for weather imperial")
-        weather = get_wx_meteo(str(location[0]), str(location[1]))
+        weather = get_wx_meteo(str(location[0]), str(location[1]), report_days=days)
     elif my_settings.use_meteo_wxApi:
         #logger.debug("System: Bot Returning Open-Meteo API for weather metric")
-        weather = get_wx_meteo(str(location[0]), str(location[1]), 1)
+        weather = get_wx_meteo(str(location[0]), str(location[1]), 1, report_days=days)
     elif not my_settings.use_meteo_wxApi and "wxc" in cmd or my_settings.use_metric:
         #logger.debug("System: Bot Returning NOAA API for weather metric")
         weather = get_NOAAweather(str(location[0]), str(location[1]), 1, report_days=days)
@@ -1377,7 +1377,7 @@ def handleEarthquake(message, message_from_id, deviceID):
     location = get_node_location(message_from_id, deviceID)
     if "earthquake" in message.lower():
         return checkUSGSEarthQuake(str(location[0]), str(location[1]))
-    
+
 def handle_checklist(message, message_from_id, deviceID):
     name = get_name_from_number(message_from_id, 'short', deviceID)
     location = get_node_location(message_from_id, deviceID)
@@ -1446,12 +1446,12 @@ def handle_messages(message, deviceID, channel_number, msg_history, publicChanne
             msgH for msgH in msg_history
             if msgH[4] == deviceID and (msgH[2] == channel_number or msgH[2] == publicChannel)
         ]
-        
+
         # Choose order and slice
         # Oldest first, take first N
         filtered_msgs = filtered_msgs[-storeFlimit:][::-1]
         if my_settings.reverseSF:
-            # reverse that 
+            # reverse that
             filtered_msgs = filtered_msgs[::-1]
 
         response = ""
@@ -1689,13 +1689,13 @@ def handle_boot(mesh=True):
     try:
         print (CustomFormatter.bold_white + f"\nMeshtastic Autoresponder Bot CTL+C to exit\n" + CustomFormatter.reset)
         if mesh:
-            
+
             for i in range(1, 10):
                 if globals().get(f'interface{i}_enabled', False):
                     myNodeNum = globals().get(f'myNodeNum{i}', 0)
                     logger.info(f"System: Autoresponder Started for Device{i} {get_name_from_number(myNodeNum, 'long', i)},"
                                 f"{get_name_from_number(myNodeNum, 'short', i)}. NodeID: {myNodeNum}, {decimal_to_hex(myNodeNum)}")
-                    
+
             if llm_enabled:
                 msg = f"System: LLM Enabled"
                 llmLoad = llm_query(" ", init=True)
@@ -1720,42 +1720,42 @@ def handle_boot(mesh=True):
                         logger.debug(f"System: BBS Link Enabled with {len(bbs_link_whitelist)} peers")
                     else:
                         logger.debug(f"System: BBS Link Enabled allowing all")
-            
+
             if my_settings.solar_conditions_enabled:
                 logger.debug("System: Celestial Telemetry Enabled")
 
             if my_settings.meshagesTTS:
                 logger.debug("System: Meshages TTS Text-to-Speech Enabled")
-            
+
             if my_settings.location_enabled:
                 if my_settings.use_meteo_wxApi:
                     logger.debug("System: Location Telemetry Enabled using Open-Meteo API")
                 else:
                     logger.debug("System: Location Telemetry Enabled using NOAA API")
-                    
+
             if my_settings.dad_jokes_enabled:
                 logger.debug("System: Dad Jokes Enabled!")
-            
+
             if my_settings.coastalEnabled:
                 logger.debug("System: Coastal Forecast and Tide Enabled!")
-            
+
             if games_enabled:
                 logger.debug("System: Games Enabled!")
-            
+
             if my_settings.wikipedia_enabled:
                 if my_settings.use_kiwix_server:
                     logger.debug(f"System: Wikipedia search Enabled using Kiwix server at {my_settings.kiwix_url}")
                 else:
                     logger.debug("System: Wikipedia search Enabled")
-            
+
             if my_settings.rssEnable:
                 logger.debug(f"System: RSS Feed Reader Enabled for feeds: {my_settings.rssFeedNames}")
             if my_settings.enable_headlines:
                 logger.debug("System: News Headlines Enabled from NewsAPI.org")
-            
+
             if my_settings.radio_detection_enabled:
                 logger.debug(f"System: Radio Detection Enabled using rigctld at {my_settings.rigControlServerAddress} broadcasting to channels: {my_settings.sigWatchBroadcastCh}")
-            
+
             if my_settings.file_monitor_enabled:
                 logger.warning(f"System: File Monitor Enabled for {my_settings.file_monitor_file_path}, broadcasting to channels: {my_settings.file_monitor_broadcastCh}")
             if my_settings.enable_runShellCmd:
@@ -1782,7 +1782,7 @@ def handle_boot(mesh=True):
                 logger.debug(f"System: Weather Alert Broadcast Enabled on channels {my_settings.emergency_responder_alert_channel} ignoreEASwords {my_settings.ignoreEASwords}")
             if my_settings.emergency_responder_enabled:
                 logger.debug(f"System: Emergency Responder Enabled on channels {my_settings.emergency_responder_alert_channel}")
-            
+
             if my_settings.qrz_hello_enabled:
                 if my_settings.train_qrz:
                     logger.debug("System: QRZ Welcome/Hello Enabled with training mode")
@@ -1810,7 +1810,7 @@ def handle_boot(mesh=True):
 
         if my_settings.motd_enabled:
             logger.debug(f"System: MOTD Enabled using {my_settings.MOTD} scheduler:{my_settings.schedulerMotd}")
-        
+
         if my_settings.sentry_enabled:
             logger.debug(f"System: Sentry Mode Enabled {my_settings.sentry_radius}m radius reporting to channel:{my_settings.secure_channel} requestLOC:{reqLocationEnabled}")
             if my_settings.sentryIgnoreList:
@@ -1820,29 +1820,29 @@ def handle_boot(mesh=True):
 
         if my_settings.highfly_enabled:
             logger.debug(f"System: HighFly Enabled using {my_settings.highfly_altitude}m limit reporting to channel:{my_settings.highfly_channel}")
-        
+
         if my_settings.store_forward_enabled:
             logger.debug(f"System: S&F(messages command) Enabled using limit: {storeFlimit} and reverse queue:{my_settings.reverseSF}")
-        
+
         if my_settings.enableEcho:
             logger.debug("System: Echo command Enabled")
-        
+
         if my_settings.repeater_enabled and multiple_interface:
             logger.debug(f"System: Repeater Enabled for Channels: {my_settings.repeater_channels}")
-        
+
         if my_settings.checklist_enabled:
             logger.debug("System: CheckList Module Enabled")
         if my_settings.inventory_enabled:
             logger.debug("System: Inventory Module Enabled")
         if my_settings.ignoreChannels:
             logger.debug(f"System: Ignoring Channels: {my_settings.ignoreChannels}")
-        
+
         if my_settings.noisyNodeLogging:
             logger.debug("System: Noisy Node Logging Enabled")
-        
+
         if my_settings.logMetaStats:
             logger.debug("System: Logging Metadata Stats Enabled, leaderboard")
-        
+
         if my_settings.scheduler_enabled:
             logger.debug(f"System: Scheduler Enabled. Default Device:{my_settings.schedulerInterface} Channel:{my_settings.schedulerChannel}")
 
@@ -1896,7 +1896,7 @@ def onReceive(packet, interface):
         rxNode = next(
             (i for i in range(1, 10)
             if globals().get(f'interface{i}_type', '') == 'ble'),0)
-        
+
     if rxNode is None:
         # default to interface 1 ## FIXME needs better like a default interface setting or hash lookup
         if 'decoded' in packet and packet['decoded']['portnum'] in ['ADMIN_APP', 'SIMULATOR_APP']:
@@ -1932,7 +1932,7 @@ def onReceive(packet, interface):
                     )
         except Exception as e:
             logger.debug(f"System: channel resolution error: {e}")
-    
+
         #debug channel info
         # if "unknown" in str(channel_name):
         #     logger.debug(f"System: Received Packet on Channel:{channel_number} on Interface:{rxNode}")
@@ -1998,11 +1998,11 @@ def onReceive(packet, interface):
             # check if the packet has a publicKey flag use it
             if packet.get('publicKey'):
                 pkiStatus = packet.get('pkiEncrypted', False), packet.get('publicKey', 'ABC')
-            
+
             # check if the packet has replyId flag // currently unused in the code
             if packet.get('replyId'):
                 replyIDset = packet.get('replyId', False)
-            
+
             # check if the packet has emoji flag set it // currently unused in the code
             if packet.get('emoji'):
                 emojiSeen = packet.get('emoji', False)
@@ -2016,7 +2016,7 @@ def onReceive(packet, interface):
 
             if packet.get('hopLimit'):
                 hop_limit = packet.get('hopLimit', 0)
-            
+
             # calculate hop count
             hop = ""
             if hop_limit > 0 and hop_start >= hop_limit:
@@ -2039,7 +2039,7 @@ def onReceive(packet, interface):
                 via_mqtt = True
             elif "udp" in str(transport_mechanism).lower():
                 hop = "Gateway"
-            
+
             if hop in ("MQTT", "Gateway") and hop_count > 0:
                 hop = f" {hop_count} Hops"
 
@@ -2064,7 +2064,7 @@ def onReceive(packet, interface):
                 # ignore help and welcome messages
                 logger.warning(f"Got Own Welcome/Help header. From: {get_name_from_number(message_from_id, 'long', rxNode)}")
                 return
-        
+
             # If the packet is a DM (Direct Message) respond to it, otherwise validate its a message for us on the channel
             if packet['to'] in [myNodeNum1, myNodeNum2, myNodeNum3, myNodeNum4, myNodeNum5, myNodeNum6, myNodeNum7, myNodeNum8, myNodeNum9]:
                 # message is DM to us
@@ -2097,7 +2097,7 @@ def onReceive(packet, interface):
                         else:
                             # respond with welcome message on DM
                             logger.warning(f"Device:{rxNode} Ignoring DM: {message_string} From: {get_name_from_number(message_from_id, 'long', rxNode)}")
-                            
+
                             # if seenNodes list is not marked as welcomed send welcome message
                             if not any(node['nodeID'] == message_from_id and node['welcome'] == True for node in seenNodes):
                                 # send welcome message
@@ -2113,13 +2113,13 @@ def onReceive(packet, interface):
                                 else:
                                     # respond with help message on DM
                                     send_message(help_message, channel_number, message_from_id, rxNode)
-                    
+
                     # add message to tts queue
                     if meshagesTTS:
                         # add to the tts_read_queue
                         readMe = f"DM from {get_name_from_number(message_from_id, 'short', rxNode)}: {message_string}"
                         tts_read_queue.append(readMe)
-                        
+
                     # log the message to the message log
                     if log_messages_to_file:
                         msgLogger.info(f"Device:{rxNode} Channel:{channel_number} | {get_name_from_number(message_from_id, 'long', rxNode)} | DM | " + message_string.replace('\n', '-nl-'))
@@ -2147,7 +2147,7 @@ def onReceive(packet, interface):
                             if channel_number == my_settings.publicChannel and my_settings.antiSpam:
                                 # warning user spamming default channel
                                 logger.warning(f"System: AntiSpam protection, sending DM to: {get_name_from_number(message_from_id, 'long', rxNode)}")
-                            
+
                                 # respond to channel message via direct message
                                 send_message(auto_response(message_string, snr, rssi, hop, pkiStatus, message_from_id, channel_number, rxNode, isDM), channel_number, message_from_id, rxNode)
                             else:
@@ -2191,7 +2191,7 @@ def onReceive(packet, interface):
                                         logger.debug(f"Repeating message on Device{i} Channel:{channel_number}")
                                         send_message(rMsg, channel_number, 0, i)
                                         time.sleep(my_settings.responseDelay)
-                    
+
                     # if QRZ enabled check if we have said hello
                     if my_settings.qrz_hello_enabled:
                         if never_seen_before(message_from_id):
@@ -2206,7 +2206,7 @@ def onReceive(packet, interface):
                                 if not my_settings.train_qrz:
                                     send_message(f"Hello {name} {qrz_hello_string}", channel_number, message_from_id, rxNode)
 
-                    # handle mini games 
+                    # handle mini games
                     if my_settings.wordOfTheDay:
                         #word of the day game play on non bot messages
                         happened, old_entry, new_entry, bingo_win, bingo_message = theWordOfTheDay.did_it_happen(message_string)
@@ -2263,10 +2263,10 @@ gameTrackers = [
     # quiz does not use a tracker (quizGamePlayer) always active
 ]
 
-# Hello World 
+# Hello World
 async def main():
     tasks = []
-    
+
     try:
         handle_boot()
         # Create core tasks
@@ -2279,7 +2279,7 @@ async def main():
 
         if my_settings.file_monitor_enabled:
             tasks.append(asyncio.create_task(handleFileWatcher(), name="file_monitor"))
-        
+
         if my_settings.radio_detection_enabled:
             tasks.append(asyncio.create_task(handleSignalWatcher(), name="hamlib"))
 
@@ -2289,10 +2289,10 @@ async def main():
 
         if my_settings.meshagesTTS:
             tasks.append(asyncio.create_task(handleTTS(), name="tts_handler"))
-        
+
         if my_settings.wsjtx_detection_enabled:
             tasks.append(asyncio.create_task(handleWsjtxWatcher(), name="wsjtx_monitor"))
-        
+
         if my_settings.js8call_detection_enabled:
             tasks.append(asyncio.create_task(handleJs8callWatcher(), name="js8call_monitor"))
 
@@ -2301,17 +2301,17 @@ async def main():
             setup_scheduler(schedulerMotd, MOTD, schedulerMessage, schedulerChannel, schedulerInterface,
     schedulerValue, schedulerTime, schedulerInterval)
             tasks.append(asyncio.create_task(run_scheduler_loop(), name="scheduler"))
-        
+
         logger.debug(f"System: Starting {len(tasks)} async tasks")
-        
+
         # Wait for all tasks with proper exception handling
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Check for exceptions in results
         for i, result in enumerate(results):
             if isinstance(result, Exception):
                 logger.error(f"Task {tasks[i].get_name()} failed with: {result}")
-        
+
     except Exception as e:
         logger.error(f"Main loop error: {e}")
     finally:

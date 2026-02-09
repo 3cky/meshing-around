@@ -11,9 +11,9 @@ def get_weather_data(api_url, params):
     response.raise_for_status()  # Raise an error for bad status codes
     return response.json()
 
-def get_wx_meteo(lat=0, lon=0, unit=0):
-	# set forcast days 1 or 3
-	forecastDays = 3
+def get_wx_meteo(lat=0, lon=0, unit=0, report_days=None):
+	# set forecast days
+	forecastDays = 3 if report_days is None else report_days
 
 	# Make sure all required weather variables are listed here
 	# The order of variables in hourly or daily is important to assign them correctly below
